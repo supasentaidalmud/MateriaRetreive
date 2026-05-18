@@ -1,0 +1,26 @@
+[
+{
+  "Name": "MateriaRetreive",
+  "InternalName": "MateriaRetreive",
+  "Author": "mrmoeb",
+  "Punchline": "Review and retrieve materia from your gear.",
+  "Description": "Adds a safe review window for retrieving attached materia from inventory and armory gear. Open it from /mr or an item's context menu, filter gearset and non-gearset items, then begin or cancel the retrieval queue when ready.",
+  "RepoUrl": "https://github.com/mrmoeb/MateriaRetreive",
+  "Tags": [
+    "materia",
+    "inventory",
+    "gearset"
+  ],
+  "AssemblyVersion": "0.1.0.0",
+  "TestingAssemblyVersion": null,
+  "ApplicableVersion": "any",
+  "DalamudApiLevel": 15,
+  "IsHide": false,
+  "IsTestingExclusive": false,
+  "ImageUrls": null,
+  "IconUrl": "https://raw.githubusercontent.com/mrmoeb/MateriaRetreive/main/images/icon.png",
+  "DownloadLinkInstall": "https://github.com/mrmoeb/MateriaRetreive/releases/download/latest/latest.zip",
+  "DownloadLinkUpdate": "https://github.com/mrmoeb/MateriaRetreive/releases/download/latest/latest.zip",
+  "LastUpdate": "1779101686"
+}
+]
