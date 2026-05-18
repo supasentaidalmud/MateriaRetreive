@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <Version>0.1.0</Version>
-    <Authors>supasentai</Authors>
+    <Authors>supasentaidalmud</Authors>
     <Company>MateriaRetreive</Company>
     <Description>Review and retrieve attached materia from inventory and armory gear.</Description>
     <PackageProjectUrl>https://example.invalid/MateriaRetreive</PackageProjectUrl>
@@ -21,4 +21,5 @@
   </ItemGroup>
 
 </Project>
+
 

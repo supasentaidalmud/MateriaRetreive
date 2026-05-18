@@ -9,10 +9,11 @@ Open it with `/mr` or from an item's context menu. The main window can switch be
 Add this URL in Dalamud's custom plugin repositories:
 
 ```text
-https://raw.githubusercontent.com/supasentai/MateriaRetreive/main/repo.json
+https://raw.githubusercontent.com/supasentaidalmud/MateriaRetreive/main/repo.json
 ```
 
 ## Release Notes
 
 The release asset must be uploaded as `latest.zip` to the GitHub release tagged `latest`.
+
 
