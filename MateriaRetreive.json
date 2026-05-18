@@ -1,5 +1,5 @@
 {
-  "Author": "mrmoeb",
+  "Author": "supasentai",
   "Name": "MateriaRetreive",
   "Punchline": "Review and retrieve materia from your gear.",
   "Description": "Adds a safe review window for retrieving attached materia from inventory and armory gear. Open it from /mr or an item's context menu, filter gearset and non-gearset items, then begin or cancel the retrieval queue when ready.",
@@ -11,3 +11,4 @@
   ],
   "IconUrl": "https://raw.githubusercontent.com/mmroeb/MateriaRetreive/main/images/icon.png"
 }
+
