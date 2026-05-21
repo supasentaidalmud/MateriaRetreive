@@ -15,16 +15,16 @@ public sealed class BulkRetrieveWindow : Window, IDisposable
     private static readonly Vector4 ItemGreen = new(0.40f, 0.88f, 0.56f, 1.00f);
     private static readonly Vector4 ItemBlue = new(0.38f, 0.72f, 1.00f, 1.00f);
 
-    private readonly Func<bool, IReadOnlyList<MateriaCandidate>> scanCandidates;
+    private readonly Func<MateriaFilter, IReadOnlyList<MateriaCandidate>> scanCandidates;
     private readonly Action<IReadOnlyList<MateriaCandidate>> startRetrieval;
     private readonly Action cancelRetrieval;
     private readonly Queue<QueuedMateriaItem> queue;
     private readonly List<QueuedMateriaItem> finished;
     private IReadOnlyList<MateriaCandidate> candidates = [];
-    private bool showGearsetItems;
+    private MateriaFilter filter = MateriaFilter.NonGearset;
 
     public BulkRetrieveWindow(
-        Func<bool, IReadOnlyList<MateriaCandidate>> scanCandidates,
+        Func<MateriaFilter, IReadOnlyList<MateriaCandidate>> scanCandidates,
         Action<IReadOnlyList<MateriaCandidate>> startRetrieval,
         Action cancelRetrieval,
         Queue<QueuedMateriaItem> queue,
@@ -47,7 +47,7 @@ public sealed class BulkRetrieveWindow : Window, IDisposable
 
     public IReadOnlyList<MateriaCandidate> Refresh()
     {
-        this.candidates = this.scanCandidates(this.showGearsetItems);
+        this.candidates = this.scanCandidates(this.filter);
         return this.candidates;
     }
 
@@ -105,21 +105,24 @@ public sealed class BulkRetrieveWindow : Window, IDisposable
         ImGui.TextColored(HeaderText, "GEAR");
 
         var availableWidth = ImGui.GetContentRegionAvail().X;
-        if (ImGui.BeginTable("##MateriaRetreiveFilters", 2, ImGuiTableFlags.SizingStretchSame, new(availableWidth, 30)))
+        if (ImGui.BeginTable("##MateriaRetreiveFilters", 3, ImGuiTableFlags.SizingStretchSame, new(availableWidth, 30)))
         {
             ImGui.TableNextColumn();
-            this.DrawFilterButton("Non-gearset", false);
+            this.DrawFilterButton("Non-gearset", MateriaFilter.NonGearset);
 
             ImGui.TableNextColumn();
-            this.DrawFilterButton("Gearset", true);
+            this.DrawFilterButton("Gearset", MateriaFilter.Gearset);
+
+            ImGui.TableNextColumn();
+            this.DrawFilterButton("Ready", MateriaFilter.Ready);
 
             ImGui.EndTable();
         }
     }
 
-    private void DrawFilterButton(string label, bool gearsetItems)
+    private void DrawFilterButton(string label, MateriaFilter filter)
     {
-        var selected = this.showGearsetItems == gearsetItems;
+        var selected = this.filter == filter;
         if (selected)
             ImGui.PushStyleColor(ImGuiCol.Button, PanelBlueLight);
 
@@ -131,7 +134,7 @@ public sealed class BulkRetrieveWindow : Window, IDisposable
         if (!clicked || selected)
             return;
 
-        this.showGearsetItems = gearsetItems;
+        this.filter = filter;
         this.Refresh();
     }
 
@@ -144,12 +147,13 @@ public sealed class BulkRetrieveWindow : Window, IDisposable
             | ImGuiTableFlags.SizingStretchProp
             | ImGuiTableFlags.Resizable;
 
-        if (!ImGui.BeginTable("##MateriaRetreiveItems", 5, flags, new(0, tableHeight)))
+        if (!ImGui.BeginTable("##MateriaRetreiveItems", 6, flags, new(0, tableHeight)))
             return;
 
         ImGui.TableSetupScrollFreeze(0, 1);
         ImGui.TableSetupColumn("Item", ImGuiTableColumnFlags.WidthStretch, 3.2f);
         ImGui.TableSetupColumn("Materia", ImGuiTableColumnFlags.WidthFixed, 70);
+        ImGui.TableSetupColumn("Spiritbond", ImGuiTableColumnFlags.WidthFixed, 86);
         ImGui.TableSetupColumn("Gearset", ImGuiTableColumnFlags.WidthFixed, 72);
         ImGui.TableSetupColumn("Container", ImGuiTableColumnFlags.WidthStretch, 1.4f);
         ImGui.TableSetupColumn("Slot", ImGuiTableColumnFlags.WidthFixed, 44);
@@ -162,6 +166,8 @@ public sealed class BulkRetrieveWindow : Window, IDisposable
             ImGui.TextColored(candidate.IsInGearset ? ItemBlue : ItemGreen, candidate.Name);
             ImGui.TableNextColumn();
             ImGui.TextUnformatted(candidate.MateriaCount.ToString());
+            ImGui.TableNextColumn();
+            ImGui.TextColored(candidate.CanExtractMateria ? ItemGreen : MutedText, $"{candidate.SpiritbondPercent}%");
             ImGui.TableNextColumn();
             ImGui.TextColored(candidate.IsInGearset ? ItemBlue : MutedText, candidate.IsInGearset ? "Yes" : "No");
             ImGui.TableNextColumn();
@@ -241,4 +247,11 @@ public sealed class BulkRetrieveWindow : Window, IDisposable
     public void Dispose()
     {
     }
+}
+
+public enum MateriaFilter
+{
+    NonGearset,
+    Gearset,
+    Ready,
 }

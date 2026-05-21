@@ -17,7 +17,7 @@ namespace MateriaRetreive;
 public sealed unsafe class Plugin : IDalamudPlugin
 {
     private const string CommandName = "/mr";
-    private const ushort FullySpiritbound = 10000;
+    internal const ushort FullySpiritbound = 10000;
 
     [PluginService] internal static IDalamudPluginInterface PluginInterface { get; private set; } = null!;
     [PluginService] internal static ICommandManager CommandManager { get; private set; } = null!;
@@ -107,7 +107,7 @@ public sealed unsafe class Plugin : IDalamudPlugin
         this.bulkRetrieveWindow.IsOpen = true;
     }
 
-    private IReadOnlyList<MateriaCandidate> ScanCandidates(bool showGearsetItems)
+    private IReadOnlyList<MateriaCandidate> ScanCandidates(MateriaFilter filter)
     {
         var assignedItemIds = this.GetAssignedGearsetItemIds();
         var candidates = new List<MateriaCandidate>();
@@ -125,11 +125,13 @@ public sealed unsafe class Plugin : IDalamudPlugin
                     continue;
 
                 var isInGearset = assignedItemIds.Contains(item->GetBaseItemId());
-                if (isInGearset != showGearsetItems)
-                    continue;
-
                 if (this.CreateCandidate(item, inventoryType, slot, isInGearset) is { } candidate)
+                {
+                    if (!ShouldShowCandidate(candidate, filter))
+                        continue;
+
                     candidates.Add(candidate);
+                }
             }
         }
 
@@ -139,6 +141,15 @@ public sealed unsafe class Plugin : IDalamudPlugin
             .ThenBy(candidate => candidate.Slot)
             .ToArray();
     }
+
+    private static bool ShouldShowCandidate(MateriaCandidate candidate, MateriaFilter filter)
+        => filter switch
+        {
+            MateriaFilter.NonGearset => !candidate.IsInGearset,
+            MateriaFilter.Gearset => candidate.IsInGearset,
+            MateriaFilter.Ready => candidate.CanExtractMateria,
+            _ => false,
+        };
 
     private static InventoryItem* GetMenuTargetItem(IMenuOpenedArgs args)
     {
@@ -159,12 +170,13 @@ public sealed unsafe class Plugin : IDalamudPlugin
         if (itemRow is null || itemRow.Value.MateriaSlotCount == 0)
             return null;
 
+        var spiritbond = item->GetSpiritbondOrCollectability();
         return new MateriaCandidate(
             item,
             itemRow.Value.Name.ExtractText(),
             baseItemId,
             item->GetMateriaCount(),
-            item->GetSpiritbondOrCollectability() >= FullySpiritbound,
+            spiritbond,
             inventoryType,
             slot,
             isInGearset);
@@ -356,7 +368,7 @@ public unsafe sealed class MateriaCandidate(
     string name,
     uint itemId,
     byte materiaCount,
-    bool canExtractMateria,
+    ushort spiritbond,
     InventoryType container,
     int slot,
     bool isInGearset)
@@ -365,7 +377,9 @@ public unsafe sealed class MateriaCandidate(
     public string Name { get; } = name;
     public uint ItemId { get; } = itemId;
     public byte MateriaCount { get; } = materiaCount;
-    public bool CanExtractMateria { get; } = canExtractMateria;
+    public ushort Spiritbond { get; } = spiritbond;
+    public int SpiritbondPercent => Math.Min(100, this.Spiritbond / 100);
+    public bool CanExtractMateria => this.Spiritbond >= Plugin.FullySpiritbound;
     public InventoryType Container { get; } = container;
     public int Slot { get; } = slot;
     public bool IsInGearset { get; } = isInGearset;
