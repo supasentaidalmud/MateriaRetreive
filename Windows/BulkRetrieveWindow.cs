@@ -29,7 +29,7 @@ public sealed class BulkRetrieveWindow : Window, IDisposable
         Action cancelRetrieval,
         Queue<QueuedMateriaItem> queue,
         List<QueuedMateriaItem> finished)
-        : base("Materia Extraction###MateriaRetreiveBulk", ImGuiWindowFlags.NoScrollbar)
+        : base("Materia Extraction###MateriaRetreiveBulk", ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoScrollbar)
     {
         this.scanCandidates = scanCandidates;
         this.startRetrieval = startRetrieval;
