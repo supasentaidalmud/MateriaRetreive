@@ -29,7 +29,7 @@ public sealed class BulkRetrieveWindow : Window, IDisposable
         Action cancelRetrieval,
         Queue<QueuedMateriaItem> queue,
         List<QueuedMateriaItem> finished)
-        : base("Materia Extraction###MateriaRetreiveBulk", ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoScrollbar)
+        : base("Retreive Materia###MateriaRetreiveBulk", ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoScrollbar)
     {
         this.scanCandidates = scanCandidates;
         this.startRetrieval = startRetrieval;
@@ -88,7 +88,7 @@ public sealed class BulkRetrieveWindow : Window, IDisposable
         drawList.AddRect(min, max, ImGui.GetColorU32(BorderBlue));
 
         ImGui.SetCursorScreenPos(min + new Vector2(8, 5));
-        ImGui.TextColored(HeaderText, "MATERIA EXTRACTION");
+        ImGui.TextColored(HeaderText, "RETREIVE MATERIA");
 
         ImGui.SetCursorScreenPos(min + new Vector2(10, 26));
         ImGui.TextColored(MutedText, $"{this.candidates.Count} eligible item(s)");
@@ -181,7 +181,7 @@ public sealed class BulkRetrieveWindow : Window, IDisposable
         if (busy)
             ImGui.BeginDisabled();
 
-        if (ImGui.Button("Extract All", new(busy ? width - 128 : width, 28)))
+        if (ImGui.Button("Retreive All", new(busy ? width - 128 : width, 28)))
             this.startRetrieval(this.candidates);
 
         if (busy)

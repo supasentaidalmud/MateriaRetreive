@@ -17,6 +17,7 @@ namespace MateriaRetreive;
 public sealed unsafe class Plugin : IDalamudPlugin
 {
     private const string CommandName = "/mr";
+    private const ushort FullySpiritbound = 10000;
 
     [PluginService] internal static IDalamudPluginInterface PluginInterface { get; private set; } = null!;
     [PluginService] internal static ICommandManager CommandManager { get; private set; } = null!;
@@ -86,10 +87,17 @@ public sealed unsafe class Plugin : IDalamudPlugin
 
         args.AddMenuItem(new MenuItem
         {
-            Name = "Retrieve All Materia",
+            Name = candidate.CanExtractMateria ? "Retreive Materia" : "Retreive All Materia",
             Prefix = SeIconChar.Circle,
             PrefixColor = 37,
-            OnClicked = _ => this.OpenWindowForCandidate(candidate),
+            Priority = candidate.CanExtractMateria ? 0 : 100,
+            OnClicked = _ =>
+            {
+                if (candidate.CanExtractMateria)
+                    this.StartRetrieval([candidate]);
+                else
+                    this.OpenWindowForCandidate(candidate);
+            },
         });
     }
 
@@ -156,6 +164,7 @@ public sealed unsafe class Plugin : IDalamudPlugin
             itemRow.Value.Name.ExtractText(),
             baseItemId,
             item->GetMateriaCount(),
+            item->GetSpiritbondOrCollectability() >= FullySpiritbound,
             inventoryType,
             slot,
             isInGearset);
@@ -347,6 +356,7 @@ public unsafe sealed class MateriaCandidate(
     string name,
     uint itemId,
     byte materiaCount,
+    bool canExtractMateria,
     InventoryType container,
     int slot,
     bool isInGearset)
@@ -355,6 +365,7 @@ public unsafe sealed class MateriaCandidate(
     public string Name { get; } = name;
     public uint ItemId { get; } = itemId;
     public byte MateriaCount { get; } = materiaCount;
+    public bool CanExtractMateria { get; } = canExtractMateria;
     public InventoryType Container { get; } = container;
     public int Slot { get; } = slot;
     public bool IsInGearset { get; } = isInGearset;
