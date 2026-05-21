@@ -1,7 +1,7 @@
 <Project Sdk="Dalamud.NET.Sdk/15.0.0">
 
   <PropertyGroup>
-    <Version>0.1.0</Version>
+    <Version>0.1.1</Version>
     <Authors>supasentaidalmud</Authors>
     <Company>MateriaRetreive</Company>
     <Description>Review and retrieve attached materia from inventory and armory gear.</Description>
